@@ -2,12 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
 
     [SerializeField] Ball ball;
     [SerializeField] GameObject arrow;
+    [SerializeField] Image aim;
+    [SerializeField] LineRenderer line;
     [SerializeField] TMP_Text shootCountText;
     [SerializeField] LayerMask ballLayer;
     [SerializeField] LayerMask rayLayer;
@@ -52,6 +55,7 @@ public class PlayerController : MonoBehaviour
         if (this.transform.position != ball.Position)
         {
             this.transform.position = ball.Position;
+            aim.gameObject.SetActive(true);
         }
 
         if (Input.GetMouseButtonDown(0)) // 0 untuk klik kiri
@@ -91,6 +95,17 @@ public class PlayerController : MonoBehaviour
             {
                 arrowRends[i].material.color = Color.Lerp(arrowOriginalColors[i], Color.red, forceFactor);
             }
+
+            // aim
+            var rect = aim.GetComponent<RectTransform>();
+            rect.anchoredPosition = Input.mousePosition;
+
+            // line
+            var ballScrPos = cam.WorldToScreenPoint(ball.Position);
+            line.SetPositions(new Vector3[] {
+                ballScrPos,
+                Input.mousePosition
+            });
         }
 
         // camera mode
