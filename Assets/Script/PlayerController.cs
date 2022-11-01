@@ -14,7 +14,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] TMP_Text shootCountText;
     [SerializeField] LayerMask ballLayer;
     [SerializeField] LayerMask rayLayer;
-    [SerializeField] Transform cameraPivot;
+    [SerializeField] FollowBall cameraPivot;
     [SerializeField] Camera cam;
     [SerializeField] Vector2 camSentivity;
     [SerializeField] float shootForce;
@@ -44,6 +44,8 @@ public class PlayerController : MonoBehaviour
 
         arrow.SetActive(false);
         shootCountText.text = "Shoot Count: " + 0;
+
+        line.enabled = false;
     }
 
     // Update is called once per frame
@@ -52,10 +54,20 @@ public class PlayerController : MonoBehaviour
         if (ball.IsMoving || ball.IsTeleporting)
             return;
 
+        // if (!cameraPivot.IsMoving && aim.gameObject.activeInHierarchy == false)
+        // {
+        aim.gameObject.SetActive(true);
+        var rectx = aim.GetComponent<RectTransform>();
+        rectx.anchoredPosition = cam.WorldToScreenPoint(ball.Position);
+        // }
+
         if (this.transform.position != ball.Position)
         {
             this.transform.position = ball.Position;
             aim.gameObject.SetActive(true);
+            var rect = aim.GetComponent<RectTransform>();
+            rect.anchoredPosition = cam.WorldToScreenPoint(ball.Position);
+
         }
 
         if (Input.GetMouseButtonDown(0)) // 0 untuk klik kiri
@@ -65,6 +77,7 @@ public class PlayerController : MonoBehaviour
             {
                 isShooting = true;
                 arrow.SetActive(true);
+                line.enabled = true;
             }
         }
 
@@ -107,6 +120,7 @@ public class PlayerController : MonoBehaviour
                 Input.mousePosition
             });
         }
+
 
         // camera mode
         if (Input.GetMouseButton(0) && isShooting == false)
@@ -156,6 +170,9 @@ public class PlayerController : MonoBehaviour
             forceDir = Vector3.zero;
             isShooting = false;
             arrow.SetActive(false);
+
+            aim.gameObject.SetActive(false);
+            line.enabled = false;
         }
 
         lastMousePosition = Input.mousePosition;
